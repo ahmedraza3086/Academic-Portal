@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Academic Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 p-0 sidebar">
+                <div class="p-3">
+                    <h4 class="text-white mb-4"><i class="fas fa-school me-2"></i>Academic Portal</h4>
+                    <div class="text-white-50 mb-3">Admin Panel</div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <a class="nav-link" href="#studentsSection"><i class="fas fa-user-graduate"></i> Students</a>
+                        <a class="nav-link" href="#facultySection"><i class="fas fa-chalkboard-teacher"></i> Faculty</a>
+                        <a class="nav-link" href="#coursesSection"><i class="fas fa-book"></i> Courses</a>
+                        <a class="nav-link" href="#enrollmentsSection"><i class="fas fa-user-plus"></i> Enrollments</a>
+                        <a class="nav-link" href="advanced-reports.html"><i class="fas fa-database"></i> Advanced Reports</a>
+                        <hr class="bg-white">
+                        <a class="nav-link text-danger" href="#" id="adminLogoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <main class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
+                    <div class="d-flex align-items-center gap-3">
+                        <button id="reloadAdminData" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-rotate-right me-1"></i>Refresh
+                        </button>
+                        <span id="adminUserName">Admin</span>
+                        <img id="adminUserAvatar" src="https://ui-avatars.com/api/?name=Admin&background=3498db&color=fff" class="rounded-circle" width="40" alt="Admin avatar">
+                    </div>
+                </div>
+
+                <div id="adminPageError" class="alert alert-danger d-none" role="alert"></div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Students</h6><h3 id="adminStatStudents">0</h3></div>
+                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Faculty</h6><h3 id="adminStatFaculty">0</h3></div>
+                                <i class="fas fa-chalkboard-teacher fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Courses</h6><h3 id="adminStatCourses">0</h3></div>
+                                <i class="fas fa-book fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Enrollments</h6><h3 id="adminStatEnrollments">0</h3></div>
+                                <i class="fas fa-users fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <section id="studentsSection" class="table-container mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0"><i class="fas fa-user-graduate me-2"></i>Students</h5>
+                    </div>
+
+                    <form id="studentForm" class="row g-2 mb-3" novalidate>
+                        <input type="hidden" id="student_record_id" name="student_record_id">
+                        <div class="col-md-3"><input name="first_name" class="form-control" placeholder="First name"></div>
+                        <div class="col-md-3"><input name="last_name" class="form-control" placeholder="Last name"></div>
+                        <div class="col-md-3"><input name="email" type="email" class="form-control" placeholder="Email"></div>
+                        <div class="col-md-3"><input name="password" type="password" class="form-control" placeholder="Password"></div>
+                        <div class="col-md-2"><input name="phone" class="form-control" placeholder="Phone"></div>
+                        <div class="col-md-2"><input name="date_of_birth" type="date" class="form-control" placeholder="DOB"></div>
+                        <div class="col-md-2"><input name="enrollment_year" class="form-control" placeholder="Year"></div>
+                        <div class="col-md-3"><input name="major" class="form-control" placeholder="Major"></div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button id="studentFormSubmit" class="btn btn-primary w-100" type="submit">Create student</button>
+                            <button id="studentFormCancel" class="btn btn-outline-secondary d-none" type="button">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>ID</th><th>Name</th><th>Email</th><th>Major</th><th>Year</th><th>Edit</th><th>Delete</th></tr>
+                            </thead>
+                            <tbody id="adminStudentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="facultySection" class="table-container mb-4">
+                    <h5><i class="fas fa-chalkboard-teacher me-2"></i>Faculty</h5>
+
+                    <form id="facultyForm" class="row g-2 mb-3" novalidate>
+                        <input type="hidden" id="faculty_record_id" name="faculty_record_id">
+                        <div class="col-md-3"><input name="first_name" class="form-control" placeholder="First name"></div>
+                        <div class="col-md-3"><input name="last_name" class="form-control" placeholder="Last name"></div>
+                        <div class="col-md-3"><input name="email" type="email" class="form-control" placeholder="Email"></div>
+                        <div class="col-md-3"><input name="password" type="password" class="form-control" placeholder="Password"></div>
+                        <div class="col-md-2"><input name="phone" class="form-control" placeholder="Phone"></div>
+                        <div class="col-md-3"><input name="department" class="form-control" placeholder="Department"></div>
+                        <div class="col-md-2"><input name="hire_date" type="date" class="form-control" placeholder="Hire date"></div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button id="facultyFormSubmit" class="btn btn-success w-100" type="submit">Create faculty</button>
+                            <button id="facultyFormCancel" class="btn btn-outline-secondary d-none" type="button">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>ID</th><th>Name</th><th>Email</th><th>Department</th><th>Hire Date</th><th>Edit</th><th>Delete</th></tr>
+                            </thead>
+                            <tbody id="adminFacultyTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="coursesSection" class="table-container mb-4">
+                    <h5><i class="fas fa-book-open me-2"></i>Courses</h5>
+
+                    <form id="courseForm" class="row g-2 mb-3" novalidate>
+                        <input type="hidden" id="course_record_id" name="course_record_id">
+                        <div class="col-md-2"><input name="course_code" class="form-control" placeholder="Code"></div>
+                        <div class="col-md-3"><input name="course_name" class="form-control" placeholder="Course name"></div>
+                        <div class="col-md-2"><input name="credits" type="number" min="1" class="form-control" placeholder="Credits"></div>
+                        <div class="col-md-3">
+                            <select id="course_faculty_id" name="faculty_id" class="form-select"></select>
+                        </div>
+                        <div class="col-md-2"><input name="semester" class="form-control" placeholder="Semester"></div>
+                        <div class="col-md-6"><input name="description" class="form-control" placeholder="Description"></div>
+                        <div class="col-md-3 d-flex gap-2">
+                            <button id="courseFormSubmit" class="btn btn-info text-white w-100" type="submit">Create course</button>
+                            <button id="courseFormCancel" class="btn btn-outline-secondary d-none" type="button">Cancel</button>
+                        </div>
+                    </form>
+
+                    <form id="assignCourseForm" class="row g-2 mb-3" novalidate>
+                        <div class="col-md-4"><select id="assign_course_id" name="course_id" class="form-select"></select></div>
+                        <div class="col-md-4"><select id="assign_faculty_id" name="faculty_id" class="form-select"></select></div>
+                        <div class="col-md-4">
+                            <button id="assignCourseSubmit" class="btn btn-warning w-100" type="submit">Assign Course to Faculty</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>ID</th><th>Code</th><th>Name</th><th>Credits</th><th>Faculty</th><th>Semester</th><th>Edit</th><th>Delete</th></tr>
+                            </thead>
+                            <tbody id="adminCoursesTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="enrollmentsSection" class="table-container mb-4">
+                    <h5><i class="fas fa-user-plus me-2"></i>Enrollments</h5>
+
+                    <form id="enrollmentForm" class="row g-2 mb-3" novalidate>
+                        <input type="hidden" id="enrollment_record_id" name="enrollment_record_id">
+                        <div class="col-md-3"><select id="enrollment_student_id" name="student_id" class="form-select"></select></div>
+                        <div class="col-md-3"><select id="enrollment_course_id" name="course_id" class="form-select"></select></div>
+                        <div class="col-md-2"><input name="enrollment_date" type="date" class="form-control"></div>
+                        <div class="col-md-2">
+                            <select name="status" class="form-select">
+                                <option value="active">active</option>
+                                <option value="completed">completed</option>
+                                <option value="dropped">dropped</option>
+                                <option value="pending">pending</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2"><input name="grade" class="form-control" placeholder="Grade"></div>
+                        <div class="col-md-4 d-flex gap-2">
+                            <button id="enrollmentFormSubmit" class="btn btn-secondary w-100" type="submit">Create enrollment</button>
+                            <button id="enrollmentFormCancel" class="btn btn-outline-secondary d-none" type="button">Cancel</button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>ID</th><th>Student</th><th>Course</th><th>Date</th><th>Status</th><th>Grade</th><th>Edit</th><th>Delete</th></tr>
+                            </thead>
+                            <tbody id="adminEnrollmentsTableBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="assets/js/admin.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/auth-config.js"></script>   <!-- Must be above auth.js -->
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - Academic Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 p-0 sidebar">
+                <div class="p-3">
+                    <h4 class="text-white mb-4"><i class="fas fa-school me-2"></i>Academic Portal</h4>
+                    <div class="text-white-50 mb-3">Faculty Panel</div>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <a class="nav-link" href="#studentsSection"><i class="fas fa-users"></i> Students</a>
+                        <a class="nav-link" href="#attendanceSection"><i class="fas fa-calendar-check"></i> Attendance</a>
+                        <a class="nav-link" href="#marksSection"><i class="fas fa-chart-bar"></i> Marks</a>
+                        <hr class="bg-white">
+                        <a class="nav-link text-danger" href="#" id="facultyLogoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </nav>
+                </div>
+            </aside>
+
+            <main class="col-md-9 col-lg-10 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>Faculty Dashboard</h2>
+                    <div class="d-flex align-items-center gap-3">
+                        <button id="reloadFacultyData" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-rotate-right me-1"></i>Refresh
+                        </button>
+                        <span id="facultyUserName">Faculty</span>
+                        <img id="facultyUserAvatar" src="https://ui-avatars.com/api/?name=Faculty&background=198754&color=fff" class="rounded-circle" width="40" alt="Faculty avatar">
+                    </div>
+                </div>
+
+                <div id="facultyPageError" class="alert alert-danger d-none" role="alert"></div>
+
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Courses</h6><h3 id="facultyStatCourses">0</h3></div>
+                                <i class="fas fa-book fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Students</h6><h3 id="facultyStatStudents">0</h3></div>
+                                <i class="fas fa-user-graduate fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Attendance Records</h6><h3 id="facultyStatAttendanceRecords">0</h3></div>
+                                <i class="fas fa-calendar-check fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card card-stats p-3">
+                            <div class="d-flex justify-content-between">
+                                <div><h6 class="text-muted">Marks Records</h6><h3 id="facultyStatMarksRecords">0</h3></div>
+                                <i class="fas fa-pen fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="table-container mb-4">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-5">
+                            <label for="facultyCourseSelect" class="form-label">Course</label>
+                            <select id="facultyCourseSelect" class="form-select"></select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="attendanceFilterDate" class="form-label">Attendance Filter Date</label>
+                            <input id="attendanceFilterDate" type="date" class="form-control">
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button id="applyAttendanceFilter" class="btn btn-outline-secondary">Apply Filter</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="studentsSection" class="table-container mb-4">
+                    <h5><i class="fas fa-users me-2"></i>Enrolled Students</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>ID</th><th>Name</th><th>Email</th><th>Enrollment Date</th><th>Performance</th></tr>
+                            </thead>
+                            <tbody id="facultyStudentsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="border rounded p-3 bg-light-subtle" id="studentPerformancePanel">
+                        <span class="text-muted">Select a student and click "View Performance" to see detailed summary.</span>
+                    </div>
+                </section>
+
+                <section id="attendanceSection" class="table-container mb-4">
+                    <h5><i class="fas fa-calendar-check me-2"></i>Attendance</h5>
+
+                    <form id="attendanceEntryForm" class="mb-3" novalidate>
+                        <div class="row g-2 align-items-end mb-2">
+                            <div class="col-md-3">
+                                <label for="attendanceEntryDate" class="form-label">Attendance Date</label>
+                                <input id="attendanceEntryDate" type="date" class="form-control" required>
+                            </div>
+                            <div class="col-md-3 d-grid">
+                                <button type="submit" class="btn btn-primary">Submit Attendance For All Students</button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered align-middle">
+                                <thead><tr><th>Student</th><th>Status</th><th>Remarks</th></tr></thead>
+                                <tbody id="attendanceEntryTableBody"></tbody>
+                            </table>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>ID</th><th>Student</th><th>Date</th><th>Status</th><th>Remarks</th><th>Edit</th><th>Delete</th></tr></thead>
+                            <tbody id="attendanceRecordsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <form id="attendanceUpdateForm" class="row g-2" novalidate>
+                        <input id="attendanceUpdateId" type="hidden">
+                        <div class="col-md-3">
+                            <select id="attendanceUpdateStatus" class="form-select">
+                                <option value="present">present</option>
+                                <option value="absent">absent</option>
+                                <option value="excused">excused</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5"><input id="attendanceUpdateRemarks" class="form-control" placeholder="Update remarks"></div>
+                        <div class="col-md-3 d-grid"><button type="submit" class="btn btn-outline-primary">Update Selected Attendance</button></div>
+                    </form>
+                </section>
+
+                <section id="marksSection" class="table-container mb-4">
+                    <h5><i class="fas fa-chart-bar me-2"></i>Marks</h5>
+
+                    <form id="marksForm" class="row g-2 mb-3" novalidate>
+                        <div class="col-md-3"><select id="marksStudentId" name="student_id" class="form-select"></select></div>
+                        <div class="col-md-2">
+                            <select id="marksAssessmentType" class="form-select">
+                                <option value="quiz">quiz</option>
+                                <option value="midterm">midterm</option>
+                                <option value="final">final</option>
+                                <option value="assignment">assignment</option>
+                                <option value="project">project</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2"><input id="marksObtained" type="number" min="0" step="0.01" class="form-control" placeholder="Obtained"></div>
+                        <div class="col-md-2"><input id="marksMax" type="number" min="1" step="0.01" class="form-control" placeholder="Max"></div>
+                        <div class="col-md-2"><input id="marksDate" type="date" class="form-control"></div>
+                        <div class="col-md-8"><input id="marksRemarks" class="form-control" placeholder="Remarks"></div>
+                        <div class="col-md-4 d-grid"><button type="submit" class="btn btn-success">Add Marks</button></div>
+                    </form>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>ID</th><th>Student</th><th>Type</th><th>Score</th><th>Date</th><th>Remarks</th><th>Edit</th><th>Delete</th></tr></thead>
+                            <tbody id="marksRecordsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <form id="marksUpdateForm" class="row g-2" novalidate>
+                        <input id="marksUpdateId" type="hidden">
+                        <div class="col-md-2">
+                            <select id="marksUpdateType" class="form-select">
+                                <option value="quiz">quiz</option>
+                                <option value="midterm">midterm</option>
+                                <option value="final">final</option>
+                                <option value="assignment">assignment</option>
+                                <option value="project">project</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2"><input id="marksUpdateObtained" type="number" min="0" step="0.01" class="form-control" placeholder="Obtained"></div>
+                        <div class="col-md-2"><input id="marksUpdateMax" type="number" min="1" step="0.01" class="form-control" placeholder="Max"></div>
+                        <div class="col-md-2"><input id="marksUpdateDate" type="date" class="form-control"></div>
+                        <div class="col-md-3"><input id="marksUpdateRemarks" class="form-control" placeholder="Remarks"></div>
+                        <div class="col-md-1 d-grid"><button type="submit" class="btn btn-outline-success">Update</button></div>
+                    </form>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="assets/js/faculty.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/auth-config.js"></script>   <!-- Must be above auth.js -->
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>
